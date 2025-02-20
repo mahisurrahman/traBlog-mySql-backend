@@ -1,4 +1,4 @@
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3999;
 const connectToDb = require("./database/db.js");
 const { app } = require("./app");
 
@@ -12,10 +12,10 @@ connectToDb()
     console.log(error);
   });
 
-app.get("/", (req, res) => {
-  res.json("Hello This is the backend");
-});
+// app.get("/", (req, res) => {
+//   res.json("Hello This is the backend");
+// });
 
-app.listen(port, () => {
-  console.log("Connected to backend");
-});
+// app.listen(port, () => {
+//   console.log("Connected to backend");
+// });
