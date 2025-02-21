@@ -5,11 +5,10 @@ const routermanager = require("./routermanager.js");
 
 connectToDb()
   .then(() => {
+    routermanager();
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
     });
-
-    routermanager();
   })
   .catch((error) => {
     console.log(error);

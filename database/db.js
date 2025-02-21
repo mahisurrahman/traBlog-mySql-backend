@@ -1,22 +1,25 @@
 require("dotenv").config();
 const mysql = require("mysql");
 
-const DBNAME = `${process.env.DBNAME}`;
-const USERNAME = `${process.env.USERNAME}`;
-const PASSWORD = `${process.env.PASSWORD}`;
-
-const connectToDb = async () => {
-  try {
+const connectToDb = () => {
+  return new Promise((resolve, reject) => {
     const db = mysql.createConnection({
       host: "localhost",
-      user: process.env.USERNAME,
-      password: process.env.PASSWORD,
-      database: process.env.DBNAME,
+      user: "root",
+      password: "root",
+      database: "traBlog",
     });
-  } catch (error) {
-    console.log("Database connection failed", error);
-    process.exit(0);
-  }
+
+    db.connect((err) => {
+      if (err) {
+        console.log("Database connection failed", err);
+        reject(err);
+      } else {
+        console.log("Connected to the database");
+        resolve(db);
+      }
+    });
+  });
 };
 
 module.exports = connectToDb;
