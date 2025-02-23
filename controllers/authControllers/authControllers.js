@@ -1,5 +1,5 @@
 const statusCode = require("../../utils/statusCode/statusCode.js");
-const authServices = require ("../../services/authServices/authServices.js");
+const authServices = require("../../services/authServices/authServices.js");
 
 const createErrorMessage = (message, data) => {
   return {
@@ -29,7 +29,15 @@ module.exports = {
   async loginUserController(req, res) {
     try {
       let response = await authServices.loginUserService(req.body);
-      return res.status(response.status).send(response);
+      if (!response.error) {
+        res.cookie("access_token", response.token, {
+          httpOnly: true,
+        });
+      }
+
+      console.log(response, "Response");
+
+      return res.status(response.status).json(response);
     } catch (error) {
       console.error(error);
       const newError = createErrorMessage();

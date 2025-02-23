@@ -1,11 +1,41 @@
 const connectToDb = require("../../database/db.js");
 const bcrypt = require("bcryptjs");
 const queryAsync = require("../../utils/queryAsyncFunction/queryAsync.js");
+const missingInputs = require("../../utils/missingInputs/missingInputs.js");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
   async registerUserService(body) {
     try {
       const db = await connectToDb();
+      const {
+        firstName,
+        lastName,
+        userImg,
+        gender,
+        userRole,
+        username,
+        email,
+        password,
+      } = body;
+
+      //Ensure if any input field is missing//
+      const requiredFields = {
+        firstName,
+        lastName,
+        userImg,
+        gender,
+        userRole,
+        username,
+        email,
+        password,
+      };
+      for (const [fieldName, fieldValue] of Object.entries(requiredFields)) {
+        const missing = missingInputs(fieldValue, fieldName);
+        if (missing) {
+          return missing;
+        }
+      }
 
       // Ensure Database Model Exists
       const createTableQuery = `
@@ -63,12 +93,12 @@ module.exports = {
 
       // Make sure insertId exists
       if (!insertResult.insertId) {
-        return{
+        return {
           status: 400,
           error: true,
           message: "Failed to insert user",
           data: null,
-        }
+        };
       }
 
       // Fetch the new user data
@@ -97,7 +127,47 @@ module.exports = {
 
   async loginUserService(body) {
     try {
-      // Implement login logic here
+      const db = await connectToDb();
+      // Check User Exists
+      const q = "SELECT * FROM users WHERE username = ?";
+      const userExists = await queryAsync(db, q, [body.username]);
+
+      if (userExists.length === 0) {
+        return {
+          status: 404,
+          error: true,
+          message: "User not found",
+          data: null,
+        };
+      }
+
+      //Check Password//
+      const isPassCorrect = bcrypt.compareSync(
+        body.password,
+        userExists[0].password
+      );
+
+      if (!isPassCorrect) {
+        return {
+          status: 400,
+          error: true,
+          message: "Password does not match",
+          data: null,
+        };
+      }
+
+      const token = jwt.sign({ id: userExists[0].id }, "jwtkey");
+      const { password, ...other } = userExists[0];
+
+      return {
+        status: 200,
+        error: false,
+        message: "Login Successful",
+        data: {
+          other,
+          token,
+        },
+      };
     } catch (error) {
       console.log("Login User Service Error", error);
       return {
