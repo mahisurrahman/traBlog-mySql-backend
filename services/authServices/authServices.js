@@ -11,7 +11,7 @@ module.exports = {
       const {
         firstName,
         lastName,
-        userImg,
+        // userImg,
         gender,
         userRole,
         username,
@@ -23,7 +23,7 @@ module.exports = {
       const requiredFields = {
         firstName,
         lastName,
-        userImg,
+        // userImg,
         gender,
         userRole,
         username,
@@ -79,11 +79,13 @@ module.exports = {
       const insertQuery = `
         INSERT INTO users (firstName, lastName, userRole, userImg, gender, username, email, password)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+      const userImg = "empty";
       const values = [
         body.firstName,
         body.lastName,
         body.userRole,
-        body.userImg,
+        userImg,
         body.gender,
         body.username,
         body.email,
@@ -129,8 +131,8 @@ module.exports = {
     try {
       const db = await connectToDb();
       // Check User Exists
-      const q = "SELECT * FROM users WHERE username = ?";
-      const userExists = await queryAsync(db, q, [body.username]);
+      const q = "SELECT * FROM users WHERE email = ?";
+      const userExists = await queryAsync(db, q, [body.email]);
 
       if (userExists.length === 0) {
         return {
