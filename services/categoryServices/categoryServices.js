@@ -157,7 +157,7 @@ module.exports = {
     try {
       const db = await connectToDb();
       const removeSingleCategoryQuery =
-        "UPDATE categories SET is_deleted = TRUE WHERE id =?";
+        "UPDATE categories SET is_deleted = TRUE AND is_active = false WHERE id =?";
       const removeSingleCategoryResult = await queryAsync(
         db,
         removeSingleCategoryQuery,

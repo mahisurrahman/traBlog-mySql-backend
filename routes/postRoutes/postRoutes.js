@@ -3,8 +3,8 @@ const router = express.Router();
 const postController = require ("../../controllers/postControllers/postControllers.js");
 
 router.get("/src/all", postController.getAllPostsController);
-router.get("/srcById/:id");
-router.get("delById/:id");
+router.get("/srcById/:id", postController.getSinglePostsController);
+router.get("delById/:id", postController.removeSinglePostController);
 router.post("/crt", postController.createPostsController);
 router.post("/uptById/:id");
 

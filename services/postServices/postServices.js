@@ -117,4 +117,73 @@ module.exports = {
       };
     }
   },
+
+  async getSinglePostsService(id) {
+    try {
+      const db = await connectToDb();
+
+      const fetchPostsQuery = "SELECT * FROM posts WHERE id =?";
+      const postsResults = await queryAsync(db, fetchPostsQuery, [id]);
+
+      if (postsResults.length === 0) {
+        db.end();
+        return {
+          status: 404,
+          error: false,
+          message: "Post Not Found",
+          data: null,
+        };
+      }
+
+      const post = postsResults[0];
+      return {
+        status: 200,
+        error: false,
+        message: "Post Found",
+        data: post,
+      };
+    } catch (error) {
+      console.log("Get Single Post Service Error", error);
+      return {
+        status: 400,
+        error: true,
+        data: null,
+        message: "Get Single Post Service Error",
+      };
+    }
+  },
+
+  async removeSinglePostService(id) {
+    try {
+      const db = await connectToDb();
+
+      const deleteQuery = "UPDATE posts SET is_deleted = TRUE AND is_active = False WHERE id =?";
+      const deleteResult = await queryAsync(db, deleteQuery, [id]);
+
+      if (!deleteResult.affectedRows) {
+        db.end();
+        return {
+          status: 404,
+          error: false,
+          message: "Post Not Found",
+          data: null,
+        };
+      }
+
+      return {
+        status: 200,
+        error: false,
+        message: "Post removed successfully",
+        data: null,
+      };
+    } catch (error) {
+      console.log("Remove Single Post Service Error", error);
+      return {
+        status: 500,
+        error: true,
+        message: "Remove Single Post Service Error",
+        data: null,
+      };
+    }
+  },
 };

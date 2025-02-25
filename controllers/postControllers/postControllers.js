@@ -1,5 +1,5 @@
 const statusCode = require("../../utils/statusCode/statusCode.js");
-const postServices = require ("../../services/postServices/postServices.js");
+const postServices = require("../../services/postServices/postServices.js");
 
 const createErrorMessage = (message, data) => {
   return {
@@ -35,6 +35,36 @@ module.exports = {
       const newError = createErrorMessage();
       newError.data = error;
       newError.message = "Get All Posts Controller Service Error";
+      newError.status = statusCode.internalServerError;
+      newError.error = true;
+      return res.status(newError.status).json(newError);
+    }
+  },
+
+  async getSinglePostsController(req, res) {
+    try {
+      let response = await postServices.createPostsService(req.params.id);
+      return res.status(response.status).send(response);
+    } catch (error) {
+      console.error(error);
+      const newError = createErrorMessage();
+      newError.data = error;
+      newError.message = "Get Single Post Controller Service Error";
+      newError.status = statusCode.internalServerError;
+      newError.error = true;
+      return res.status(newError.status).json(newError);
+    }
+  },
+
+  async removeSinglePostController(req, res) {
+    try {
+      let response = await postServices.removeSinglePostService(req.params.id);
+      return res.status(response.status).send(response);
+    } catch (error) {
+      console.error(error);
+      const newError = createErrorMessage();
+      newError.data = error;
+      newError.message = "Remove Single Post Controller Service Error";
       newError.status = statusCode.internalServerError;
       newError.error = true;
       return res.status(newError.status).json(newError);
