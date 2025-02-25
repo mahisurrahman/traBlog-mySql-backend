@@ -28,6 +28,8 @@ module.exports = {
 
   async getAllCategoryController(req, res) {
     try {
+      let response = await categoryServices.getAllCatgrySrvc();
+      return res.status(response.status).send(response);
     } catch (error) {
       console.error(error);
       const newError = createErrorMessage();
@@ -41,6 +43,8 @@ module.exports = {
 
   async getSingleCategoryController(req, res) {
     try {
+      let response = await categoryServices.getSingleCatgrySrvc(req.params.id);
+      return res.status(response.status).send(response);
     } catch (error) {
       console.error(error);
       const newError = createErrorMessage();
@@ -54,6 +58,8 @@ module.exports = {
 
   async deleteSingleCategoryController(req, res) {
     try {
+      let response = await categoryServices.rmvSingleCatgrySrvc(req.params.id);
+      return res.status(response.status).send(response);
     } catch (error) {
       console.error(error);
       const newError = createErrorMessage();

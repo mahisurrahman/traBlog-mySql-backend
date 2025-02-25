@@ -46,19 +46,4 @@ module.exports = {
       return res.status(newError.status).json(newError);
     }
   },
-
-  async logoutUserController(req, res) {
-    try {
-      let response = await authServices.logoutUserService(req.body);
-      return res.status(response.status).send(response);
-    } catch (error) {
-      console.error(error);
-      const newError = createErrorMessage();
-      newError.data = error;
-      newError.message = "Logout User Controller Error";
-      newError.status = statusCode.internalServerError;
-      newError.error = true;
-      return res.status(newError.status).json(newError);
-    }
-  },
 };

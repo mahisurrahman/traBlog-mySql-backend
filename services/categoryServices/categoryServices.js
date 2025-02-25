@@ -20,7 +20,10 @@ module.exports = {
         CREATE TABLE IF NOT EXISTS categories (
             id INT AUTO_INCREMENT PRIMARY KEY,
             categoryName VARCHAR(225) NOT NULL UNIQUE,
-            categoryCode VARCHAR(255) NOT NULL UNIQUE
+            categoryCode VARCHAR(255) NOT NULL UNIQUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            is_active BOOLEAN DEFAULT TRUE,
+            is_deleted BOOLEAN DEFAULT FALSE
         );`;
 
       await queryAsync(db, createTableQuery);
@@ -82,6 +85,26 @@ module.exports = {
 
   async getAllCatgrySrvc() {
     try {
+      const db = await connectToDb();
+      const getAllCategoriesQuery = "SELECT * FROM categories";
+      const allCategoriesResults = await queryAsync(db, getAllCategoriesQuery);
+      db.end();
+
+      if (allCategoriesResults.length > 0) {
+        return {
+          status: 200,
+          error: false,
+          message: "All Categories Fetched",
+          data: allCategoriesResults,
+        };
+      } else {
+        return {
+          status: 404,
+          error: false,
+          message: "No Categories Existed",
+          data: allCategoriesResults,
+        };
+      }
     } catch (error) {
       console.log("Get All Categories Service Error", error);
       return {
@@ -95,6 +118,30 @@ module.exports = {
 
   async getSingleCatgrySrvc(id) {
     try {
+      const db = await connectToDb();
+      const getSingleCategoryQuery = "SELECT * FROM categories WHERE id =?";
+      const singleCategoryResults = await queryAsync(
+        db,
+        getSingleCategoryQuery,
+        [id]
+      );
+      db.end();
+
+      if (singleCategoryResults.length > 0) {
+        return {
+          status: 200,
+          error: false,
+          message: "Single Category Fetched",
+          data: singleCategoryResults[0],
+        };
+      } else {
+        return {
+          status: 404,
+          error: false,
+          message: "No Category Found with this ID",
+          data: null,
+        };
+      }
     } catch (error) {
       console.log("Get Single Categories Service Error", error);
       return {
@@ -108,6 +155,31 @@ module.exports = {
 
   async rmvSingleCatgrySrvc(id) {
     try {
+      const db = await connectToDb();
+      const removeSingleCategoryQuery =
+        "UPDATE categories SET is_deleted = TRUE WHERE id =?";
+      const removeSingleCategoryResult = await queryAsync(
+        db,
+        removeSingleCategoryQuery,
+        [id]
+      );
+      db.end();
+
+      if (removeSingleCategoryResult.affectedRows > 0) {
+        return {
+          status: 200,
+          error: false,
+          message: "Category successfully removed",
+          data: null,
+        };
+      } else {
+        return {
+          status: 404,
+          error: false,
+          message: "No Category Found with this ID",
+          data: null,
+        };
+      }
     } catch (error) {
       console.log("Remove Single Categories Service Error", error);
       return {

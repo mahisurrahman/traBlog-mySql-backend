@@ -180,18 +180,4 @@ module.exports = {
       };
     }
   },
-
-  async logoutUserService(body) {
-    try {
-      // Implement logout logic here
-    } catch (error) {
-      console.log("Logout User Service Error", error);
-      return {
-        status: 400,
-        error: true,
-        data: null,
-        message: "Logout User Service Error",
-      };
-    }
-  },
 };
