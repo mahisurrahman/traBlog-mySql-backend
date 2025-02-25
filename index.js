@@ -13,11 +13,3 @@ connectToDb()
   .catch((error) => {
     console.log(error);
   });
-
-// app.get("/", (req, res) => {
-//   res.json("Hello This is the backend");
-// });
-
-// app.listen(port, () => {
-//   console.log("Connected to backend");
-// });

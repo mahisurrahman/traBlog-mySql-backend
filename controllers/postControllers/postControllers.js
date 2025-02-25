@@ -25,4 +25,19 @@ module.exports = {
       return res.status(newError.status).json(newError);
     }
   },
+
+  async createPostsController(req, res) {
+    try {
+      let response = await postServices.createPostsService(req.body);
+      return res.status(response.status).send(response);
+    } catch (error) {
+      console.error(error);
+      const newError = createErrorMessage();
+      newError.data = error;
+      newError.message = "Get All Posts Controller Service Error";
+      newError.status = statusCode.internalServerError;
+      newError.error = true;
+      return res.status(newError.status).json(newError);
+    }
+  },
 };
