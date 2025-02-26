@@ -46,12 +46,11 @@ module.exports = {
     try {
       const db = await connectToDb();
 
-      const { postTitle, description, postThumbnail, userId, categoryId } =
+      const { postTitle, description, userId, categoryId } =
         body;
       const requiredFields = {
         postTitle,
         description,
-        postThumbnail,
         userId,
         categoryId,
       };
