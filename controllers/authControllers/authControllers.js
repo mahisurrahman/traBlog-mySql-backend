@@ -14,7 +14,7 @@ module.exports = {
   async registerUserController(req, res) {
     try {
       console.log(req.body, "body");
-      let response = await authServices.registerUserService(req.body);
+      let response = await authServices.registerUserService(req);
       return res.status(response.status).send(response);
     } catch (error) {
       console.error(error);

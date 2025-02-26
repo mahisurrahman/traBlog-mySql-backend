@@ -86,7 +86,7 @@ module.exports = {
   async getAllCatgrySrvc() {
     try {
       const db = await connectToDb();
-      const getAllCategoriesQuery = "SELECT * FROM categories";
+      const getAllCategoriesQuery = "SELECT * FROM categories WHERE is_active = TRUE";
       const allCategoriesResults = await queryAsync(db, getAllCategoriesQuery);
       db.end();
 
@@ -119,7 +119,7 @@ module.exports = {
   async getSingleCatgrySrvc(id) {
     try {
       const db = await connectToDb();
-      const getSingleCategoryQuery = "SELECT * FROM categories WHERE id =?";
+      const getSingleCategoryQuery = "SELECT * FROM categories WHERE id =? AND is_active = TRUE";
       const singleCategoryResults = await queryAsync(
         db,
         getSingleCategoryQuery,

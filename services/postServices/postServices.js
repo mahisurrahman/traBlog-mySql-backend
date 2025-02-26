@@ -5,12 +5,32 @@ const queryAsync = require("../../utils/queryAsyncFunction/queryAsync.js");
 module.exports = {
   async getAllPostsService() {
     try {
-      return {
-        status: 200,
-        error: false,
-        data: null,
-        message: "Posts Not Found",
-      };
+      const db = await connectToDb();
+      const q = "SELECT * FROM posts WHERE is_active = TRUE";
+      const results = await new Promise((resolve, reject) => {
+        db.query(q, (err, data) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(data);
+          }
+        });
+      });
+      if (results.length > 0) {
+        return {
+          status: 200,
+          error: false,
+          data: results,
+          message: "Posts Found",
+        };
+      } else {
+        return {
+          status: 200,
+          error: false,
+          data: null,
+          message: "No Posts Found",
+        };
+      }
     } catch (error) {
       console.log("Get All Post Service Error", error);
       return {
@@ -122,7 +142,8 @@ module.exports = {
     try {
       const db = await connectToDb();
 
-      const fetchPostsQuery = "SELECT * FROM posts WHERE id =?";
+      const fetchPostsQuery =
+        "SELECT * FROM posts WHERE id =? AND is_active = TRUE";
       const postsResults = await queryAsync(db, fetchPostsQuery, [id]);
 
       if (postsResults.length === 0) {
@@ -157,7 +178,25 @@ module.exports = {
     try {
       const db = await connectToDb();
 
-      const deleteQuery = "UPDATE posts SET is_deleted = TRUE AND is_active = False WHERE id =?";
+      //Check whether post is removed already or not//
+      const checkPostsExistsQuery =
+        "SELECT * FROM posts WHERE id = ? AND is_deleted = TRUE";
+      const checkPostsExists = await queryAsync(db, checkPostsExistsQuery, [
+        id,
+      ]);
+
+      if (checkPostsExists.length > 0) {
+        db.end();
+        return {
+          status: 404,
+          error: false,
+          message: "Post Already Deleted",
+          data: null,
+        };
+      }
+
+      const deleteQuery =
+        "UPDATE posts SET is_deleted = TRUE AND is_active = FALSE WHERE id =?";
       const deleteResult = await queryAsync(db, deleteQuery, [id]);
 
       if (!deleteResult.affectedRows) {
@@ -182,6 +221,42 @@ module.exports = {
         status: 500,
         error: true,
         message: "Remove Single Post Service Error",
+        data: null,
+      };
+    }
+  },
+
+  async getPostByUserId(id) {
+    try {
+      const db = await connectToDb();
+
+      const fetchPostsQuery =
+        "SELECT * FROM posts WHERE userId = ? AND is_active = TRUE";
+      const postsResults = await queryAsync(db, fetchPostsQuery, [id]);
+
+      if (postsResults.length === 0) {
+        db.end();
+        return {
+          status: 404,
+          error: false,
+          message: "No Posts Found",
+          data: null,
+        };
+      }
+
+      const post = postsResults[0];
+      return {
+        status: 200,
+        error: false,
+        message: "Post Found",
+        data: post,
+      };
+    } catch (error) {
+      console.log("Get Post By User ID Service Error", error);
+      return {
+        status: 400,
+        error: true,
+        message: "Get Post By User ID Service Error",
         data: null,
       };
     }

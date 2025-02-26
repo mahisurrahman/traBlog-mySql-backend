@@ -3,27 +3,32 @@ const bcrypt = require("bcryptjs");
 const queryAsync = require("../../utils/queryAsyncFunction/queryAsync.js");
 const missingInputs = require("../../utils/missingInputs/missingInputs.js");
 const jwt = require("jsonwebtoken");
+const path = require("path");
 
 module.exports = {
-  async registerUserService(body) {
+  async registerUserService(data) {
     try {
       const db = await connectToDb();
       const {
         firstName,
         lastName,
-        // userImg,
         gender,
         userRole,
         username,
         email,
         password,
-      } = body;
+      } = data.body;
+
+      let imageName = null;
+
+      if (data.file && data.file.path) {
+        imageName = path.basename(data.file.path);
+      }
 
       //Ensure if any input field is missing//
       const requiredFields = {
         firstName,
         lastName,
-        // userImg,
         gender,
         userRole,
         username,
@@ -58,8 +63,8 @@ module.exports = {
       // Check Existing User
       const checkQuery = "SELECT * FROM users WHERE email = ? OR username = ?";
       const existingUsers = await queryAsync(db, checkQuery, [
-        body.email,
-        body.username,
+        data.body.email,
+        data.body.username,
       ]);
       if (existingUsers.length > 0) {
         db.end();
@@ -73,22 +78,23 @@ module.exports = {
 
       // Hashing Password
       const salt = bcrypt.genSaltSync(10);
-      const hash = bcrypt.hashSync(body.password, salt);
+      const hash = bcrypt.hashSync(data.body.password, salt);
 
       // Insert user's data to the DB
       const insertQuery = `
         INSERT INTO users (firstName, lastName, userRole, userImg, gender, username, email, password)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
-      const userImg = "empty";
+      const userImg = imageName;
+
       const values = [
-        body.firstName,
-        body.lastName,
-        body.userRole,
+        data.body.firstName,
+        data.body.lastName,
+        data.body.userRole,
         userImg,
-        body.gender,
-        body.username,
-        body.email,
+        data.body.gender,
+        data.body.username,
+        data.body.email,
         hash,
       ];
       const insertResult = await queryAsync(db, insertQuery, values);
