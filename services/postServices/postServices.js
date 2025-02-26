@@ -1,12 +1,18 @@
 const connectToDb = require("../../database/db.js");
 const missingInputs = require("../../utils/missingInputs/missingInputs.js");
 const queryAsync = require("../../utils/queryAsyncFunction/queryAsync.js");
+const path = require("path");
 
 module.exports = {
   async getAllPostsService() {
     try {
       const db = await connectToDb();
-      const q = "SELECT * FROM posts WHERE is_active = TRUE";
+      const q = `SELECT * 
+        FROM posts
+        INNER JOIN users ON posts.userId = users.id
+        INNER JOIN categories ON posts.categoryId = categories.id
+        WHERE posts.is_active = TRUE;
+        `;
       const results = await new Promise((resolve, reject) => {
         db.query(q, (err, data) => {
           if (err) {
@@ -42,12 +48,17 @@ module.exports = {
     }
   },
 
-  async createPostsService(body) {
+  async createPostsService(data) {
     try {
       const db = await connectToDb();
 
-      const { postTitle, description, userId, categoryId } =
-        body;
+      const { postTitle, description, userId, categoryId } = data.body;
+      let imageName = null;
+
+      if (data.file && data.file.path) {
+        imageName = path.basename(data.file.path);
+      }
+
       const requiredFields = {
         postTitle,
         description,
@@ -80,7 +91,7 @@ module.exports = {
 
       const checkPostsExistsQuery = "SELECT * FROM posts WHERE postTitle = ?";
       const checkPostsExists = await queryAsync(db, checkPostsExistsQuery, [
-        body.postTitle,
+        data.body.postTitle,
       ]);
 
       if (checkPostsExists.length > 0) {
@@ -95,12 +106,14 @@ module.exports = {
 
       const insertQuery =
         "INSERT INTO posts (postTitle, description, postThumbnail, userId, categoryId) VALUES (?, ?, ?, ?, ?)";
+
+      const postThumbnail = imageName;
       const values = [
-        body.postTitle,
-        body.description,
-        body.postThumbnail,
-        body.userId,
-        body.categoryId,
+        data.body.postTitle,
+        data.body.description,
+        postThumbnail,
+        data.body.userId,
+        data.body.categoryId,
       ];
 
       const insertResult = await queryAsync(db, insertQuery, values);

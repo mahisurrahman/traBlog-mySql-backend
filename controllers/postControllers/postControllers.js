@@ -28,7 +28,7 @@ module.exports = {
 
   async createPostsController(req, res) {
     try {
-      let response = await postServices.createPostsService(req.body);
+      let response = await postServices.createPostsService(req);
       return res.status(response.status).send(response);
     } catch (error) {
       console.error(error);
