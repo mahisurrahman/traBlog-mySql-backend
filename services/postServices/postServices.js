@@ -9,10 +9,12 @@ module.exports = {
       const db = await connectToDb();
       const q = `SELECT * 
         FROM posts
-        INNER JOIN users ON posts.userId = users.id
-        INNER JOIN categories ON posts.categoryId = categories.id
         WHERE posts.is_active = TRUE;
         `;
+
+      // INNER JOIN users ON posts.userId = users.id
+      // INNER JOIN categories ON posts.categoryId = categories.id
+
       const results = await new Promise((resolve, reject) => {
         db.query(q, (err, data) => {
           if (err) {
@@ -58,6 +60,8 @@ module.exports = {
       if (data.file && data.file.path) {
         imageName = path.basename(data.file.path);
       }
+
+      console.log("image", imageName);
 
       const requiredFields = {
         postTitle,
