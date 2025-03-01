@@ -5,7 +5,7 @@ const categoryController = require("../../controllers/categoryController/categor
 
 router.post("/crt", categoryController.crtCategoryController);
 router.get("/src/all", categoryController.getAllCategoryController);
-router.get("/srcById/id", categoryController.getSingleCategoryController);
+router.get("/srcById/:id", categoryController.getSingleCategoryController);
 router.get("/del/id", categoryController.deleteSingleCategoryController);
 
 module.exports = router;

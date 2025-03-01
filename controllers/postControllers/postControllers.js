@@ -43,7 +43,7 @@ module.exports = {
 
   async getSinglePostsController(req, res) {
     try {
-      let response = await postServices.createPostsService(req.params.id);
+      let response = await postServices.getSinglePostsService(req.params.id);
       return res.status(response.status).send(response);
     } catch (error) {
       console.error(error);

@@ -54,17 +54,17 @@ module.exports = {
     try {
       const db = await connectToDb();
 
-      const { postTitle, description, userId, categoryId } = data.body;
+      const { postTitle, description, userId, categoryId, postSummary } =
+        data.body;
       let imageName = null;
 
       if (data.file && data.file.path) {
         imageName = path.basename(data.file.path);
       }
 
-      console.log("image", imageName);
-
       const requiredFields = {
         postTitle,
+        postSummary,
         description,
         userId,
         categoryId,
@@ -81,6 +81,7 @@ module.exports = {
           CREATE TABLE IF NOT EXISTS posts (
             id INT AUTO_INCREMENT PRIMARY KEY,
             postTitle VARCHAR(255) NOT NULL,
+            postSummary VARCHAR(1000) NOT NULL,
             description TEXT NOT NULL,
             postThumbnail VARCHAR(255) NOT NULL,
             userId INT NOT NULL,
@@ -109,11 +110,12 @@ module.exports = {
       }
 
       const insertQuery =
-        "INSERT INTO posts (postTitle, description, postThumbnail, userId, categoryId) VALUES (?, ?, ?, ?, ?)";
+        "INSERT INTO posts (postTitle, postSummary, description, postThumbnail, userId, categoryId) VALUES (?, ?, ?, ?, ?, ?)";
 
       const postThumbnail = imageName;
       const values = [
         data.body.postTitle,
+        data.body.postSummary,
         data.body.description,
         postThumbnail,
         data.body.userId,
@@ -260,7 +262,7 @@ module.exports = {
         };
       }
 
-      const post = postsResults[0];
+      const post = postsResults;
       return {
         status: 200,
         error: false,

@@ -1,4 +1,5 @@
 const connectToDb = require("../../database/db.js");
+const queryAsync = require("../../utils/queryAsyncFunction/queryAsync.js");
 
 module.exports = {
   async getAllUserService() {

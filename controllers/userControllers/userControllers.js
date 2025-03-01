@@ -1,5 +1,5 @@
 const statusCode = require("../../utils/statusCode/statusCode.js");
-const userServices = require ("../../services/userServices/userServices.js");
+const userServices = require("../../services/userServices/userServices.js");
 const createErrorMessage = (message, data) => {
   return {
     status: statusCode,
@@ -19,6 +19,22 @@ module.exports = {
       const newError = createErrorMessage();
       newError.data = error;
       newError.message = "Get All User Controller Service Error";
+      newError.status = statusCode.internalServerError;
+      newError.error = true;
+      return res.status(newError.status).json(newError);
+    }
+  },
+  async getUserByIdControllers(req, res) {
+    try {
+      let response = await userServices.getSingleUserDetailsService(
+        req.params.id
+      );
+      return res.status(response.status).send(response);
+    } catch (error) {
+      console.error(error);
+      const newError = createErrorMessage();
+      newError.data = error;
+      newError.message = "Get User By Id Controller Service Error";
       newError.status = statusCode.internalServerError;
       newError.error = true;
       return res.status(newError.status).json(newError);

@@ -3,5 +3,6 @@ const router = express.Router();
 const userControllers = require("../../controllers/userControllers/userControllers");
 
 router.get("/src/all", userControllers.getAllUsersControllers);
+router.get("/srcById/:id", userControllers.getUserByIdControllers);
 
 module.exports = router;
