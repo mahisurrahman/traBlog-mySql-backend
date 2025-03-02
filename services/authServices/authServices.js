@@ -137,7 +137,7 @@ module.exports = {
     try {
       const db = await connectToDb();
       // Check User Exists
-      const q = "SELECT * FROM users WHERE email = ?";
+      const q = "SELECT * FROM users WHERE email = ? AND is_active = 1";
       const userExists = await queryAsync(db, q, [body.email]);
 
       if (userExists.length === 0) {

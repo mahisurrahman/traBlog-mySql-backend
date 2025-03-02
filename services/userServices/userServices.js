@@ -78,7 +78,7 @@ module.exports = {
 
       //Check if the user is already deleted or not//
       const checkUserExistsQuery =
-        "SELECT * FROM users WHERE id =? AND is_deleted = TRUE";
+        "SELECT * FROM users WHERE id =? AND is_deleted = 1";
       const checkUserExists = await queryAsync(db, checkUserExistsQuery, [id]);
 
       if (checkUserExists.length > 0) {
@@ -91,15 +91,8 @@ module.exports = {
         };
       }
 
-      //Soft Delete the user//
-      // Update the is_deleted field to TRUE and is_active field to FALSE//
-      // This will allow us to keep track of deleted users and still retrieve them if needed//
-      // The user will still exist in the database, but it will be marked as inactive and unsearchable//
-      // This helps in maintaining data integrity and security//
-      // The user will be removed from the posts table as well//  
-
       const deleteQuery =
-        "UPDATE users SET is_deleted = TRUE AND is_active = FALSE WHERE id =?";
+        "UPDATE users SET is_deleted = 1, is_active = 0 WHERE id = ?";
       const deleteResult = await queryAsync(db, deleteQuery, [id]);
 
       if (!deleteResult.affectedRows) {

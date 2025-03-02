@@ -40,4 +40,22 @@ module.exports = {
       return res.status(newError.status).json(newError);
     }
   },
+
+
+  async deleteUserByIdControllers(req, res) {
+    try {
+      let response = await userServices.removeSingleUserService(
+        req.params.id
+      );
+      return res.status(response.status).send(response);
+    } catch (error) {
+      console.error(error);
+      const newError = createErrorMessage();
+      newError.data = error;
+      newError.message = "Delete User By Id Controller Service Error";
+      newError.status = statusCode.internalServerError;
+      newError.error = true;
+      return res.status(newError.status).json(newError);
+    }
+  },
 };
